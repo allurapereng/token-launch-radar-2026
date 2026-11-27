@@ -146,6 +146,12 @@
     if (r.token_odds < 0.3) risks.push('Low category launch rate: fewer than 30% of its peers record a token.');
     if (!risks.length) risks.push('No single red flag in the snapshot: TVL, growth and age all point the same way.');
     var floor20 = money(r.tvl_usd * 0.8);
+    // Rank-aware: "drops out of the top 10" is only true for ranks 1-10.
+    // Below the top 10 a 20% TVL fall drops the row further down the board,
+    // and a confirmed token removes it from the board entirely (any rank).
+    var mind = r.rank <= 10
+      ? 'Drops out of the top 10 if TVL falls 20% (below ' + floor20 + ') or a token is confirmed. Re-rank if 7d stays negative for two weeks.'
+      : 'Drops further down the board if TVL falls 20% (below ' + floor20 + '); a confirmed token removes it from the board entirely. Re-rank if 7d stays negative for two weeks.';
     $('detail').innerHTML =
       '<div class="detail-head"><h2>#' + r.rank + ' ' + esc(r.name) + '</h2>' +
       '<span class="muted">' + esc(r.category || 'Uncategorised') + ' · ' + esc(r.chains.join(', ')) + '</span></div>' +
@@ -170,7 +176,7 @@
       }).join('') + '</ol>' +
       '<p style="font-family:var(--mono);font-size:12.5px;margin:8px 0 0">Min capital $' + r.min_capital_usd + ' · farm cost $' + r.cost_per_hour_usd + '/h of active time</p>' +
       '<h3 style="margin-top:8px">Risks</h3><p class="risk" style="margin:4px 0">' + esc(risks.join(' ')) + '</p>' +
-      '<h3 style="margin-top:8px">What would change my mind</h3><p class="mind" style="margin:4px 0">Drops out of the top 10 if TVL falls 20% (below ' + floor20 + ') or a token is confirmed. Re-rank if 7d stays negative for two weeks.</p>' +
+      '<h3 style="margin-top:8px">What would change my mind</h3><p class="mind" style="margin:4px 0">' + mind + '</p>' +
       '</div></div>';
   }
 
