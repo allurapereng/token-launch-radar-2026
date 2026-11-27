@@ -390,10 +390,36 @@ function scoreOne(
   };
 }
 
-/** The one-line reason a row holds its rank, built only from its own figures. */
-function whyLine(p: SnapshotProtocol, s: { implied: number; odds: number; peerMultiple: number; age: number | null }, growthPct: number): string {
+/** The one-line reason a row holds its rank: it names the driver doing the
+ *  work, not just the row's figures. The implied value is TVL x peerMultiple
+ *  x sizeF x growthMult x maturityMult x odds; the driver is the live
+ *  adjustment multiplier furthest from neutral (1.00) in log terms. When
+ *  every adjustment sits within 2% of neutral, the peer valuation itself is
+ *  the driver. Numbers are untouched — only this string changes. */
+function whyLine(p: SnapshotProtocol, s: { implied: number; odds: number; peerMultiple: number; age: number | null; sizeF: number; growthMult: number; maturityMult: number }, growthPct: number): string {
   const ageText = s.age === null ? 'age unknown' : `${s.age}d, no token`;
-  return `TVL ${fmtMoney(p.tvl_usd)} · 7d ${fmtPct(growthPct)} · ${ageText} · odds ${Math.round(s.odds * 100)}% · peers ${s.peerMultiple.toFixed(2)}x TVL`;
+  const adjustments = [
+    { key: 'growth', mult: s.growthMult },
+    { key: 'maturity', mult: s.maturityMult },
+    { key: 'size', mult: s.sizeF },
+  ];
+  let top = adjustments[0]!;
+  for (const a of adjustments) if (Math.abs(Math.log(a.mult)) > Math.abs(Math.log(top.mult))) top = a;
+  const peers = `peers ${s.peerMultiple.toFixed(2)}x`;
+  const odds = `odds ${Math.round(s.odds * 100)}%`;
+  if (Math.abs(Math.log(top.mult)) < Math.log(1.02)) {
+    return `Peers value it at ${s.peerMultiple.toFixed(2)}x TVL · ${odds} · TVL ${fmtMoney(p.tvl_usd)} · ${ageText}`;
+  }
+  if (top.key === 'growth') {
+    const verb = top.mult >= 1 ? 'lifts value' : 'drags value';
+    return `7d ${fmtPct(growthPct)} ${verb} x${top.mult.toFixed(2)} · ${peers} · ${odds} · ${ageText}`;
+  }
+  if (top.key === 'maturity') {
+    const ageLead = s.age === null ? 'Age unknown' : `${s.age}d old`;
+    return `${ageLead}, maturity x${top.mult.toFixed(2)} drags value · ${peers} · ${odds}`;
+  }
+  const verb = top.mult >= 1 ? 'earns a size premium' : 'takes a size discount';
+  return `TVL ${fmtMoney(p.tvl_usd)} ${verb} x${top.mult.toFixed(2)} · ${peers} · ${odds} · ${ageText}`;
 }
 
 /** The first chain a protocol names, or a neutral phrase. */
