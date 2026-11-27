@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Launch Radar — pre-token protocols ranked by implied launch value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="title-row">
+    <h1>LAUNCH RADAR</h1>
+    <span class="model-tag">model hybrid-1</span>
+    <span class="asof" id="asof"></span>
+  </div>
+  <p class="subtitle">Pre-token protocols ranked by implied launch value. Every figure follows from the sealed snapshot's own columns.</p>
+  <div class="strip" id="integrity"></div>
+  <div class="strip strip-validation" id="validation"></div>
+  <nav class="tabs">
+    <a href="#board" id="tab-board">Board</a>
+    <a href="#live" id="tab-live">Live tokens</a>
+    <a href="#method" id="tab-method">Method</a>
+  </nav>
+</header>
+<main>
+  <section id="view-board" class="view">
+    <div class="kpi" id="kpi"></div>
+    <div class="filters" id="filters">
+      <label>Category <select id="f-cat"></select></label>
+      <label>Chain <select id="f-chain"></select></label>
+      <label>Sort <select id="f-sort">
+        <option value="value">Implied value</option>
+        <option value="tvl">TVL</option>
+        <option value="growth">7d growth</option>
+        <option value="odds">Token odds</option>
+      </select></label>
+      <label>Search <input id="f-q" type="text" placeholder="name or slug" autocomplete="off"></label>
+      <span class="count" id="f-count"></span>
+    </div>
+    <h2 class="section-title">Top 5 — the launches worth farming first</h2>
+    <div class="top5" id="top5"></div>
+    <h2 class="section-title">The board <span class="muted" id="board-note"></span></h2>
+    <table class="board">
+      <thead><tr>
+        <th class="num">#</th><th>Protocol</th><th>Category</th><th>Chains</th>
+        <th class="num">TVL</th><th class="num">7d</th><th class="num">Implied value</th>
+        <th class="num">Odds</th><th>Why this rank</th><th class="num">Farm $/h</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="foot-note" id="board-foot"></p>
+  </section>
+  <section id="view-detail" class="view hidden">
+    <p><a href="#board" class="back">&larr; Back to the board</a></p>
+    <div id="detail"></div>
+  </section>
+  <section id="view-live" class="view hidden">
+    <h2 class="section-title">Live tokens — already trading, shown at the market's own value, never ranked</h2>
+    <p class="muted">These protocols record a token. The radar does not rank them: their value is the market's, not the model's.</p>
+    <table class="board">
+      <thead><tr><th>Protocol</th><th>Category</th><th>Chains</th><th class="num">TVL</th><th class="num">Market cap</th><th class="num">7d</th></tr></thead>
+      <tbody id="live-rows"></tbody>
+    </table>
+  </section>
+  <section id="view-method" class="view hidden">
+    <h2 class="section-title">Method — the model, stated whole</h2>
+    <div id="method-body"></div>
+  </section>
+</main>
+<footer class="foot">
+  <p>Launch Radar, model hybrid-1. Source: the sealed DefiLlama snapshot only — no other data, no network, no hardcoded names. Implied values are this entry's own claims, never the snapshot's.</p>
+</footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
